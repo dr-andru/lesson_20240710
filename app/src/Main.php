@@ -1,19 +1,36 @@
 <?php
 
+use Request\Get;
+use Request\Post;
+use Request\Server;
+use Routing\Route;
 use Shop\Customer\Order;
 
 class Main
 {
+    private Get $get;
+
+    private Post $post;
+
+    private Server $server;
+
+    private Route $route;
 
     public function main(): void
     {
         $this->init();
 
-        echo 'RUN SUCCESSFUL';
+        $namespace = $this->route->getParent();
 
-        $order = new Order();
+        $base = $this->route->getBase();
 
-        print_r($order);
+        if ($base) {
+            $class = implode('\\', $namespace) . '\\' . $base[0];
+            
+            $object = new $class();
+
+            $object->getRequest($this->get);
+        }
     }
 
     private function init(): void
@@ -29,5 +46,10 @@ class Main
             return false;
         });
 
+        $this->get = new Get($_GET);
+        $this->post = new Post($_POST);
+        $this->server = new Server($_SERVER);
+
+        $this->route = new Route($_SERVER['REQUEST_URI']);
     }
 }
