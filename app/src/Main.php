@@ -25,11 +25,15 @@ class Main
         $base = $this->route->getBase();
 
         if ($base) {
-            $class = implode('\\', $namespace) . '\\' . $base[0];
+            $class = 'Controllers\\' . implode('\\', $namespace) . '\\' . $base[0];
             
             $object = new $class();
 
-            $object->getRequest($this->get);
+            if ($this->server->isGet()) {
+                echo $object->getRequest($this->get);
+            } elseif ($this->server->isPost()) {
+                echo $object->postRequest($this->post);
+            }
         }
     }
 
